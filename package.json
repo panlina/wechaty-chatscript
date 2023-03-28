@@ -1,0 +1,14 @@
+{
+  "name": "wechaty-chatscript",
+  "version": "0.0.0",
+  "description": "A Wechaty plugin that implements chatscript",
+  "keywords": [
+    "wechaty",
+    "chatscript"
+  ],
+  "author": "Jack Lu <jacklu@jacklu.me>",
+  "license": "ISC",
+  "peerDependencies": {
+    "wechaty": "^0.60.10"
+  }
+}
