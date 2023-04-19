@@ -10,5 +10,8 @@
   "license": "ISC",
   "peerDependencies": {
     "wechaty": "^0.60.10"
+  },
+  "dependencies": {
+    "chatscript": "github:panlina/chatscript"
   }
 }
