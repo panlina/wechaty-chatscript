@@ -18,14 +18,18 @@ module.exports = function WechatyChatscriptPlugin(program) {
 		(async () => {
 			machine.run(chatscript.parse(program));
 			while (!(await machine.step()));
-			bot.on('message', async (/** @type {Message} */message) => {
-				var g = machine.emit({
-					type: 'receive',
-					argument: new Message(message)
-				});
-				while (!(await g.next()).done);
-			});
+			bot.on('message', listener);
 		})();
+		return () => {
+			bot.off('message', listener);
+		};
+		async function listener(/** @type {Message} */message) {
+			var g = machine.emit({
+				type: 'receive',
+				argument: new Message(message)
+			});
+			while (!(await g.next()).done);
+		}
 		/** @param {import("wechaty").Contact} contact */
 		function Contact(contact) {
 			return Object.assign(new chatscript.Value.Object({
