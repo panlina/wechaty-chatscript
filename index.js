@@ -17,7 +17,7 @@ module.exports = function WechatyChatscriptPlugin(program) {
 		});
 		(async () => {
 			machine.run(chatscript.parse(program));
-			while (!(await machine.step()));
+			while (!await machine.step());
 			bot.on('message', listener);
 		})();
 		return () => {
