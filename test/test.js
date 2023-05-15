@@ -15,7 +15,7 @@ it('', async () => {
 	bot.use(new WechatyChatscriptPlugin(`
 		on receive message do (
 			message.text = "ding" ?
-				(send "dong" to message.from;) : 0
+				(send "dong" to message.sender;) : 0
 		);
 	`));
 
@@ -32,6 +32,37 @@ it('', async () => {
 
 	var message = await waitForMessage(contact);
 	assert.equal(message.text(), "dong");
+
+	await bot.stop();
+});
+
+it('echo', async () => {
+	var mocker = new Mocker();
+
+	var puppet = new PuppetMock({ mocker });
+	var bot = new Wechaty({ puppet });
+	bot.use(new WechatyChatscriptPlugin(`
+		while 1 do {
+			var message;
+			var sender;
+			receive message from sender;
+			send message to sender;
+		}
+	`));
+
+	await bot.start();
+
+	mocker.scan('https://github.com/wechaty', 1);
+	var user = mocker.createContact();
+	mocker.login(user);
+
+	var contact = mocker.createContact();
+
+	await sleep(100);
+	contact.say("a").to(user);
+
+	var message = await waitForMessage(contact);
+	assert.equal(message.text(), "a");
 
 	await bot.stop();
 });
