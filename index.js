@@ -9,7 +9,7 @@ var ORIGINAL = Symbol('original');
  */
 module.exports = function WechatyChatscriptPlugin(program) {
 	return function (/** @type {Wechaty} */bot) {
-		var environment = new chatscript.Environment(new chatscript.Scope({}));
+		var environment = new chatscript.Environment(new chatscript.Scope(require('l-library')));
 		var machine = new chatscript.Machine(environment, {
 			receive() {
 				return new Promise(resolve => {

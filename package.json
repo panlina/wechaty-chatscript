@@ -12,7 +12,8 @@
     "wechaty": "^0.60.10"
   },
   "dependencies": {
-    "chatscript": "github:panlina/chatscript"
+    "chatscript": "github:panlina/chatscript",
+    "l-library": "github:panlina/l-library"
   },
   "devDependencies": {
     "mocha": "^10.2.0",
