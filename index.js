@@ -1,6 +1,7 @@
 /** @typedef { import("wechaty").Wechaty } Wechaty */
 /** @typedef { import("wechaty").Room } Room */
 /** @typedef { import("wechaty").Message } Message */
+var EventEmitter = require('events');
 var chatscript = require('chatscript');
 var ORIGINAL = Symbol('original');
 
@@ -22,22 +23,35 @@ module.exports = function WechatyChatscriptPlugin(program) {
 				await receiver[ORIGINAL].say(message.value);
 			}
 		});
-		(async () => {
-			machine.run(chatscript.parse(program));
-			while (!machine.step(machine.await ? await machine.await : undefined));
-			bot.on('message', listener);
-		})();
-		return () => {
+		var eventEmitter = new EventEmitter();
+		setTimeout(async () => {
+			try {
+				machine.run(chatscript.parse(program));
+				while (!machine.step(machine.await ? await machine.await : undefined));
+				bot.on('message', listener);
+			} catch (e) {
+				if (e instanceof chatscript.ParseError || e instanceof chatscript.Error)
+					eventEmitter.emit('error', e);
+				else throw e;
+			}
+		}, 0);
+		return Object.assign(() => {
 			bot.off('message', listener);
-		};
+		}, { eventEmitter: eventEmitter });
 		async function listener(/** @type {Message} */message) {
-			var g = machine.emit({
-				type: 'receive',
-				argument: new Message(message)
-			});
-			for (; ;) {
-				var { value: value, done: done } = g.next(value instanceof Promise ? await value : undefined);
-				if (done) break;
+			try {
+				var g = machine.emit({
+					type: 'receive',
+					argument: new Message(message)
+				});
+				for (; ;) {
+					var { value: value, done: done } = g.next(value instanceof Promise ? await value : undefined);
+					if (done) break;
+				}
+			} catch (e) {
+				if (e instanceof chatscript.Error)
+					eventEmitter.emit('error', e);
+				else throw e;
 			}
 		}
 		/** @param {import("wechaty").Contact} contact */
